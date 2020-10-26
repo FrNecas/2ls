@@ -148,6 +148,9 @@ public:
     const valuet &value,
     const namespacet &ns) const=0;
 
+  virtual std::vector<std::string> get_invariants(
+    const domaint::valuet &value) const { return {}; }
+
   /// Project invariant (abstract value) onto a set of variables.
   /// If vars is empty, project onto all variables (get the entire invariant).
   // (not useful to make value const (e.g. union-find))

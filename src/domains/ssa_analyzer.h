@@ -34,6 +34,12 @@ public:
 
   void get_result(exprt &result, const var_sett &vars);
 
+  void export_invariants(
+    local_SSAt &SSA,
+    const std::vector<std::string> &invariants);
+
+  int get_name_node_loc(const std::string &name);
+
   inline unsigned get_number_of_solver_instances() { return solver_instances; }
   inline unsigned get_number_of_solver_calls() { return solver_calls; }
 

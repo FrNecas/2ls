@@ -131,6 +131,20 @@ void simple_domaint::output_value(
   }
 }
 
+std::vector<std::string> simple_domaint::get_invariants(
+  const domaint::valuet &value) const
+{
+  auto &simple_value=dynamic_cast<const valuet &>(value);
+  std::vector<std::string> invariants;
+  for(rowt row=0; row<templ.size(); row++)
+  {
+    const exprt &templ_expr=simple_value.get_row_expr(row, templ[row]);
+    if (!is_cprover_symbol(templ_expr))
+      invariants.push_back(from_expr(domaint::ns, "", templ_expr));
+  }
+  return invariants;
+}
+
 /// Project invariant (abstract value) onto a set of variables.
 /// Default behaviour: result is a conjunction of expressions of all template
 /// row such that all symbols occurring in the row expression are in vars

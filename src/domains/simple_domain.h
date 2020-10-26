@@ -125,6 +125,9 @@ public:
     const domaint::valuet &value,
     const namespacet &ns) const override;
 
+  std::vector<std::string> get_invariants(
+    const domaint::valuet &value) const override;
+
   /// Project invariant (abstract value) onto a set of variables.
   /// Default behaviour: result is a conjunction of expressions of all template
   /// row such that all symbols occurring in the row expression are in vars
