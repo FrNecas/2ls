@@ -36,11 +36,10 @@ public:
 
   inline unsigned get_number_of_solver_instances() { return solver_instances; }
   inline unsigned get_number_of_solver_calls() { return solver_calls; }
+  std::unique_ptr<domaint::valuet> result;
 
 protected:
   domaint *domain; // template generator is responsible for the domain object
-  std::unique_ptr<domaint::valuet> result;
-
   // statistics
   unsigned solver_instances;
   unsigned solver_calls;

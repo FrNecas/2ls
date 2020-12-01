@@ -61,11 +61,11 @@ public:
   unsigned domain_number; // serves as id for variables names
 
   optionst options; // copy: we may override options
+  std::unique_ptr<domaint> domain_ptr;
 
 protected:
   const ssa_dbt &ssa_db;
   const ssa_local_unwindert &ssa_local_unwinder;
-  std::unique_ptr<domaint> domain_ptr;
   bool std_invariants; // include value at loop entry
 
   virtual void collect_variables_loop(

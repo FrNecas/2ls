@@ -138,6 +138,8 @@ void summarizer_fwt::do_summary(
   analyzer(solver, SSA, cond, template_generator);
   analyzer.get_result(summary->fw_transformer, template_generator.inout_vars());
   analyzer.get_result(summary->fw_invariant, template_generator.loop_vars());
+  summary->domain_ptr=std::move(template_generator.domain_ptr);
+  summary->value_ptr=std::move(analyzer.result);
 
 #ifdef SHOW_WHOLE_RESULT
   // to see all the custom template values
