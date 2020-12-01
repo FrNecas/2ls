@@ -35,7 +35,7 @@ void summarizer_fw_termt::compute_summary_rec(
 {
   if(options.get_bool_option("competition-mode") &&
      summary_db.exists(ID__start) &&
-     summary_db.get(ID__start).terminates==NO)
+     summary_db.get(ID__start)->terminates==NO)
   {
     return;
   }
@@ -90,12 +90,12 @@ void summarizer_fw_termt::compute_summary_rec(
           << (has_loops ? "has loops" : "does not have loops") << eom;
 
   // create summary
-  summaryt summary;
-  summary.params=SSA.params;
-  summary.globals_in=SSA.globals_in;
-  summary.globals_out=SSA.globals_out;
-  summary.fw_precondition=precondition;
-  summary.terminates=UNKNOWN;
+  auto summary=new summaryt();
+  summary->params=SSA.params;
+  summary->globals_in=SSA.globals_in;
+  summary->globals_out=SSA.globals_out;
+  summary->fw_precondition=precondition;
+  summary->terminates=UNKNOWN;
 
   // compute summary
   if(!options.get_bool_option("havoc"))
@@ -114,7 +114,7 @@ void summarizer_fw_termt::compute_summary_rec(
   {
     do_nontermination(function_name, SSA, summary);
   }
-  if(summary.terminates==UNKNOWN)
+  if(summary->terminates==UNKNOWN)
   {
     bool has_terminating_function_calls=
       has_function_calls && calls_terminate==YES;
@@ -122,16 +122,16 @@ void summarizer_fw_termt::compute_summary_rec(
     if(!has_loops && !has_function_calls)
     {
       status() << "Function trivially terminates" << eom;
-      summary.terminates=YES;
+      summary->terminates=YES;
     }
     else if(!has_loops && has_function_calls && calls_terminate==YES)
     {
       status() << "Function terminates" << eom;
-      summary.terminates=YES;
+      summary->terminates=YES;
     }
     else if(has_function_calls && calls_terminate!=YES)
     {
-      summary.terminates=calls_terminate;
+      summary->terminates=calls_terminate;
     }
     else if(has_loops &&
             (!has_function_calls || has_terminating_function_calls))
@@ -142,7 +142,7 @@ void summarizer_fw_termt::compute_summary_rec(
   {
     std::ostringstream out;
     out << std::endl << "Summary for function " << function_name << std::endl;
-    summary.output(out, SSA.ns);
+    summary->output(out, SSA.ns);
     status() << out.str() << eom;
   }
 
@@ -193,7 +193,7 @@ void summarizer_fw_termt::inline_summaries(
       }
 
       // get information about callee termination
-      if(summary_db.exists(fname) && summary_db.get(fname).terminates!=YES)
+      if(summary_db.exists(fname) && summary_db.get(fname)->terminates!=YES)
       {
         // cannot propagate NO
         // because call reachability might be over-approximating
@@ -207,41 +207,41 @@ void summarizer_fw_termt::inline_summaries(
 void summarizer_fw_termt::do_nontermination(
   const function_namet &function_name,
   local_SSAt &SSA,
-  summaryt &summary)
+  summaryt *summary)
 {
   // calling context, invariant, function call summaries
   exprt::operandst cond;
-  if(!summary.fw_invariant.is_nil())
-    cond.push_back(summary.fw_invariant);
-  if(!summary.fw_precondition.is_nil())
-    cond.push_back(summary.fw_precondition);
+  if(!summary->fw_invariant.is_nil())
+    cond.push_back(summary->fw_invariant);
+  if(!summary->fw_precondition.is_nil())
+    cond.push_back(summary->fw_precondition);
   cond.push_back(ssa_inliner.get_summaries(SSA));
 
   if(!check_end_reachable(function_name, SSA, conjunction(cond)))
   {
     status() << "Function never terminates normally" << eom;
 
-    if(summary.fw_precondition.is_true())
-      summary.fw_transformer=false_exprt();
+    if(summary->fw_precondition.is_true())
+      summary->fw_transformer=false_exprt();
     else
-      summary.fw_transformer=
-        implies_exprt(summary.fw_precondition, false_exprt());
+      summary->fw_transformer=
+        implies_exprt(summary->fw_precondition, false_exprt());
 
-    summary.terminates=NO;
+    summary->terminates=NO;
   }
 }
 
 void summarizer_fw_termt::do_termination(
   const function_namet &function_name,
   local_SSAt &SSA,
-  summaryt &summary)
+  summaryt *summary)
 {
   // calling context, invariant, function call summaries
   exprt::operandst cond;
-  if(!summary.fw_invariant.is_nil())
-    cond.push_back(summary.fw_invariant);
-  if(!summary.fw_precondition.is_nil())
-    cond.push_back(summary.fw_precondition);
+  if(!summary->fw_invariant.is_nil())
+    cond.push_back(summary->fw_invariant);
+  if(!summary->fw_precondition.is_nil())
+    cond.push_back(summary->fw_precondition);
   cond.push_back(ssa_inliner.get_summaries(SSA));
 
   status() << "Synthesizing ranking function to prove termination" << eom;
@@ -264,13 +264,13 @@ void summarizer_fw_termt::do_termination(
   analyzer1.set_message_handler(get_message_handler());
   analyzer1(solver, SSA, conjunction(cond), template_generator1);
   analyzer1.get_result(
-    summary.termination_argument, template_generator1.all_vars());
+    summary->termination_argument, template_generator1.all_vars());
 
   // extract information whether a ranking function was found for all loops
-  summary.terminates=check_termination_argument(summary.termination_argument);
-  if(!summary.fw_precondition.is_true())
-    summary.termination_argument=
-      implies_exprt(summary.fw_precondition, summary.termination_argument);
+  summary->terminates=check_termination_argument(summary->termination_argument);
+  if(!summary->fw_precondition.is_true())
+    summary->termination_argument=
+      implies_exprt(summary->fw_precondition, summary->termination_argument);
 
   // statistics
   solver_instances+=analyzer1.get_number_of_solver_instances();

@@ -76,7 +76,7 @@ public:
   void operator()(
     const ssa_local_unwindert &ssa_unwinder,
     const unwindable_local_SSAt &ssa,
-    const summaryt &summary);
+    const summaryt *summary);
 
 protected:
   typedef std::pair<dynamic_cfg_idt, exprt> assumptiont;

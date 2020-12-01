@@ -181,13 +181,13 @@ void summary_checker_baset::check_properties(
   // invariant, calling contexts
   if(summary_db.exists(f_it->first))
   {
-    solver << summary_db.get(f_it->first).fw_invariant;
-    solver << summary_db.get(f_it->first).fw_precondition;
+    solver << summary_db.get(f_it->first)->fw_invariant;
+    solver << summary_db.get(f_it->first)->fw_precondition;
 
     if(options.get_bool_option("heap") &&
-       summary_db.get(f_it->first).aux_precondition.is_not_nil())
+       summary_db.get(f_it->first)->aux_precondition.is_not_nil())
     {
-      solver << summary_db.get(f_it->first).aux_precondition;
+      solver << summary_db.get(f_it->first)->aux_precondition;
     }
   }
 

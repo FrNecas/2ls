@@ -55,12 +55,12 @@ protected:
   void do_termination(
     const function_namet &function_name,
     local_SSAt &SSA,
-    summaryt &summary);
+    summaryt *summary);
 
   void do_nontermination(
     const function_namet &function_name,
     local_SSAt &SSA,
-    summaryt &summary);
+    summaryt *summary);
 };
 
 #endif

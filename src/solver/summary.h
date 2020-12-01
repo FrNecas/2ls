@@ -63,7 +63,7 @@ class summaryt
 
   void output(std::ostream &out, const namespacet &ns) const;
 
-  void join(const summaryt &new_summary);
+  void join(const summaryt *new_summary);
 
   void set_value_domains(const local_SSAt &SSA);
 

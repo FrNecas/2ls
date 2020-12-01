@@ -53,12 +53,12 @@ void summarizer_fwt::compute_summary_rec(
 #endif
 
   // create summary
-  summaryt summary;
-  summary.params=SSA.params;
-  summary.globals_in=SSA.globals_in;
-  summary.globals_out=SSA.globals_out;
-  summary.set_value_domains(SSA);
-  summary.fw_precondition=precondition;
+  auto summary=new summaryt();
+  summary->params=SSA.params;
+  summary->globals_in=SSA.globals_in;
+  summary->globals_out=SSA.globals_out;
+  summary->set_value_domains(SSA);
+  summary->fw_precondition=precondition;
 
   if(!options.get_bool_option("havoc"))
   {
@@ -71,7 +71,7 @@ void summarizer_fwt::compute_summary_rec(
   {
     std::ostringstream out;
     out << std::endl << "Summary for function " << function_name << std::endl;
-    summary.output(out, SSA.ns);
+    summary->output(out, SSA.ns);
     status() << out.str() << eom;
   }
 #endif
@@ -83,7 +83,7 @@ void summarizer_fwt::compute_summary_rec(
   {
     std::ostringstream out;
     out << std::endl << "Summary for function " << function_name << std::endl;
-    summary_db.get(function_name).output(out, SSA.ns);
+    summary_db.get(function_name)->output(out, SSA.ns);
     status() << out.str() << eom;
   }
 }
@@ -91,7 +91,7 @@ void summarizer_fwt::compute_summary_rec(
 void summarizer_fwt::do_summary(
   const function_namet &function_name,
   local_SSAt &SSA,
-  summaryt &summary,
+  summaryt *summary,
   exprt cond,
   bool context_sensitive)
 {
@@ -113,13 +113,13 @@ void summarizer_fwt::do_summary(
   exprt::operandst conds;
   conds.reserve(5);
   conds.push_back(cond);
-  conds.push_back(summary.fw_precondition);
+  conds.push_back(summary->fw_precondition);
   conds.push_back(ssa_inliner.get_summaries(SSA));
 
 #ifdef REUSE_INVARIANTS
   if(summary_db.exists(function_name)) // reuse existing invariants
   {
-    const exprt &old_inv=summary_db.get(function_name).fw_invariant;
+    const exprt &old_inv=summary_db.get(function_name)->fw_invariant;
     exprt inv=ssa_unwinder.get(function_name).rename_invariant(old_inv);
     conds.push_back(inv);
 
@@ -136,8 +136,8 @@ void summarizer_fwt::do_summary(
   cond=conjunction(conds);
 
   analyzer(solver, SSA, cond, template_generator);
-  analyzer.get_result(summary.fw_transformer, template_generator.inout_vars());
-  analyzer.get_result(summary.fw_invariant, template_generator.loop_vars());
+  analyzer.get_result(summary->fw_transformer, template_generator.inout_vars());
+  analyzer.get_result(summary->fw_invariant, template_generator.loop_vars());
 
 #ifdef SHOW_WHOLE_RESULT
   // to see all the custom template values
@@ -146,12 +146,12 @@ void summarizer_fwt::do_summary(
   debug() << "whole result: " << from_expr(SSA.ns, "", whole_result) << eom;
 #endif
 
-  if(context_sensitive && !summary.fw_precondition.is_true())
+  if(context_sensitive && !summary->fw_precondition.is_true())
   {
-    summary.fw_transformer=
-      implies_exprt(summary.fw_precondition, summary.fw_transformer);
-    summary.fw_invariant=
-      implies_exprt(summary.fw_precondition, summary.fw_invariant);
+    summary->fw_transformer=
+      implies_exprt(summary->fw_precondition, summary->fw_transformer);
+    summary->fw_invariant=
+      implies_exprt(summary->fw_precondition, summary->fw_invariant);
   }
 
   solver_instances+=analyzer.get_number_of_solver_instances();

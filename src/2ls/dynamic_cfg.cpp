@@ -19,13 +19,13 @@ Author: Peter Schrammel
 void dynamic_cfgt::operator()(
   const ssa_local_unwindert &ssa_unwinder,
   const unwindable_local_SSAt &ssa,
-  const summaryt &summary)
+  const summaryt *summary)
 {
   const goto_programt &goto_program=ssa.goto_function.body;
   build_cfg(goto_program, ssa_unwinder);
 
   assumptionst assumptions;
-  build_from_invariants(ssa, summary.fw_invariant, assumptions);
+  build_from_invariants(ssa, summary->fw_invariant, assumptions);
   add_assumptions(assumptions);
 }
 

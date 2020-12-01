@@ -36,7 +36,7 @@ void summarizer_baset::summarize()
   {
     status() << "\nSummarizing function " << it->first << eom;
     if(!summary_db.exists(it->first) ||
-       summary_db.get(it->first).mark_recompute)
+       summary_db.get(it->first)->mark_recompute)
       compute_summary_rec(it->first, precondition, false);
     else
       status() << "Summary for function " << it->first
@@ -51,7 +51,7 @@ void summarizer_baset::summarize(const function_namet &function_name)
 
   status() << "\nSummarizing function " << function_name << eom;
   if(!summary_db.exists(function_name) ||
-     summary_db.get(function_name).mark_recompute)
+     summary_db.get(function_name)->mark_recompute)
   {
     compute_summary_rec(
       function_name,
@@ -230,11 +230,11 @@ bool summarizer_baset::check_precondition(
 
   if(summary_db.exists(fname))
   {
-    summaryt summary=summary_db.get(fname);
-    if(summary.mark_recompute)
+    summaryt *summary=summary_db.get(fname);
+    if(summary->mark_recompute)
       return false;
     if(!context_sensitive ||
-       summary.fw_precondition.is_true())  // precondition trivially holds
+       summary->fw_precondition.is_true())  // precondition trivially holds
     {
       status() << "Precondition trivially holds, replacing by summary."
                << eom;
@@ -243,14 +243,14 @@ bool summarizer_baset::check_precondition(
     }
     else
     {
-      assertion=summary.fw_precondition;
+      assertion=summary->fw_precondition;
 
       // getting globals at call site
       local_SSAt::var_sett cs_globals_in;
       SSA.get_globals(n_it->location, cs_globals_in);
 
       ssa_inliner.rename_to_caller(
-        f_it, summary.params, cs_globals_in, summary.globals_in, assertion);
+        f_it, summary->params, cs_globals_in, summary->globals_in, assertion);
 
       debug() << "precondition assertion: "
               << from_expr(SSA.ns, "", assertion) << eom;

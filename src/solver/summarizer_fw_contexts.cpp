@@ -41,7 +41,7 @@ void summarizer_fw_contextst::summarize()
       continue;
     status() << "\nSummarizing function " << it->first << eom;
     if(!summary_db.exists(it->first) ||
-       summary_db.get(it->first).mark_recompute)
+       summary_db.get(it->first)->mark_recompute)
       compute_summary_rec(it->first, precondition, false);
     else
       status() << "Summary for function " << it->first
@@ -125,12 +125,12 @@ void summarizer_fw_contextst::inline_summaries(
 
         // put dummy summary
         const local_SSAt &SSA_call=ssa_db.get(fname);
-        summaryt summary;
-        summary.params=SSA_call.params;
-        summary.globals_in=SSA_call.globals_in;
-        summary.globals_out=SSA_call.globals_out;
-        summary.fw_precondition=precondition_call;
-        summary.fw_transformer=true_exprt();
+        auto summary=new summaryt();
+        summary->params=SSA_call.params;
+        summary->globals_in=SSA_call.globals_in;
+        summary->globals_out=SSA_call.globals_out;
+        summary->fw_precondition=precondition_call;
+        summary->fw_transformer=true_exprt();
 
         summary_db.put(fname, summary);
         continue;

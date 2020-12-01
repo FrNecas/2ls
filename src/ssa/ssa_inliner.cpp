@@ -21,7 +21,7 @@ void ssa_inlinert::get_summary(
   const local_SSAt &SSA,
   local_SSAt::nodest::const_iterator n_it,
   local_SSAt::nodet::function_callst::const_iterator f_it,
-  const summaryt &summary,
+  const summaryt *summary,
   bool forward,
   exprt::operandst &summaries,
   exprt::operandst &bindings)
@@ -61,7 +61,7 @@ void ssa_inlinert::get_summary(
   // equalities for arguments
   bindings.push_back(
     get_replace_params(
-      summary.params,
+      summary->params,
       *f_it,
       cs_globals_in,
       cs_globals_out,
@@ -72,20 +72,20 @@ void ssa_inlinert::get_summary(
   // equalities for globals_in
   if(forward)
     bindings.push_back(
-      get_replace_globals_in(summary.globals_in, cs_globals_in));
+      get_replace_globals_in(summary->globals_in, cs_globals_in));
   else
     bindings.push_back(
-      get_replace_globals_in(summary.globals_out, cs_globals_out));
+      get_replace_globals_in(summary->globals_out, cs_globals_out));
 
   // constraints for transformer
   exprt transformer;
   if(forward)
-    transformer=summary.fw_transformer.is_nil() ? true_exprt() :
-      summary.fw_transformer;
+    transformer=summary->fw_transformer.is_nil() ? true_exprt() :
+      summary->fw_transformer;
   else
   {
-    transformer=summary.bw_transformer.is_nil() ? true_exprt() :
-      summary.bw_transformer;
+    transformer=summary->bw_transformer.is_nil() ? true_exprt() :
+      summary->bw_transformer;
   }
   rename(transformer);
   summaries.push_back(
@@ -179,7 +179,7 @@ void ssa_inlinert::replace(
 
       if(summary_db.exists(fname))
       {
-        summaryt summary=summary_db.get(fname);
+        summaryt *summary=summary_db.get(fname);
 
         status() << "Replacing function " << fname << " by summary" << eom;
 
@@ -270,24 +270,24 @@ void ssa_inlinert::replace(
   local_SSAt::nodet::function_callst::iterator f_it,
   const local_SSAt::var_sett &cs_globals_in,
   const local_SSAt::var_sett &cs_globals_out,
-  const summaryt &summary,
+  const summaryt *summary,
   bool forward,
   bool preconditions_as_assertions)
 {
   counter++;
 
   // equalities for arguments
-  replace_params(summary.params, *f_it);
+  replace_params(summary->params, *f_it);
 
   // equalities for globals_in
-  replace_globals_in(summary.globals_in, cs_globals_in);
+  replace_globals_in(summary->globals_in, cs_globals_in);
 
   // constraints for precondition and transformer
   exprt precondition;
   if(forward)
-    precondition=summary.fw_precondition;
+    precondition=summary->fw_precondition;
   else
-    precondition=summary.bw_precondition;
+    precondition=summary->bw_precondition;
   if(!preconditions_as_assertions)
   {
     rename(precondition);
@@ -306,9 +306,9 @@ void ssa_inlinert::replace(
   }
   exprt transformer;
   if(forward)
-    transformer=summary.fw_transformer;
+    transformer=summary->fw_transformer;
   else
-    transformer=summary.bw_transformer;
+    transformer=summary->bw_transformer;
   node->constraints.push_back(transformer);  // copy
   exprt &_transformer=node->constraints.back();
   rename(_transformer);
@@ -317,7 +317,7 @@ void ssa_inlinert::replace(
   rm_function_calls.insert(f_it);
 
   // equalities for globals out (including unmodified globals)
-  replace_globals_out(summary.globals_out, cs_globals_in, cs_globals_out);
+  replace_globals_out(summary->globals_out, cs_globals_in, cs_globals_out);
 }
 
 /// inline function
@@ -419,7 +419,7 @@ exprt ssa_inlinert::get_replace_params(
   const local_SSAt::var_sett &cs_globals_in,
   const local_SSAt::var_sett &cs_globals_out,
   const local_SSAt &SSA,
-  const summaryt &summary,
+  const summaryt *summary,
   const local_SSAt::locationt &loc)
 {
   // equalities for arguments
@@ -457,14 +457,14 @@ exprt ssa_inlinert::get_replace_params(
       std::list<exprt> args_deref_in=
         apply_dereference(args_in, SSA.ssa_value_ai[loc], SSA.ns);
       std::list<exprt> params_deref_in=
-        apply_dereference(params_in, summary.value_domain_in, SSA.ns);
+        apply_dereference(params_in, summary->value_domain_in, SSA.ns);
 
       local_SSAt::locationt next_loc=loc;
       ++next_loc;
       std::list<exprt> args_deref_out=
         apply_dereference(args_out, SSA.ssa_value_ai[next_loc], SSA.ns);
       std::list<exprt> params_deref_out=
-        apply_dereference(params_out, summary.value_domain_out, SSA.ns);
+        apply_dereference(params_out, summary->value_domain_out, SSA.ns);
 
       const typet arg_symbol_type=arg_type.subtype();
       arg_type=SSA.ns.follow(arg_symbol_type);
@@ -486,7 +486,7 @@ exprt ssa_inlinert::get_replace_params(
           for(auto &alias : aliases)
           {
             const exprt lhs_expr=
-              param_out_transformer(alias, arg_type, summary.globals_out);
+              param_out_transformer(alias, arg_type, summary->globals_out);
             const exprt rhs_expr=
               arg_out_transformer(
                 alias,
@@ -529,7 +529,7 @@ exprt ssa_inlinert::get_replace_params(
 
               symbol_exprt member_lhs_out;
               if(find_corresponding_symbol(
-                 arg_member, summary.globals_out, member_lhs_out))
+                 arg_member, summary->globals_out, member_lhs_out))
               {
                 rename(member_lhs_out);
                 const exprt arg_out=
@@ -582,7 +582,7 @@ exprt ssa_inlinert::get_replace_params(
                 exprt::operandst binding;
 
                 const exprt lhs_expr=
-                  param_out_transformer(p_out, arg_type, summary.globals_out);
+                  param_out_transformer(p_out, arg_type, summary->globals_out);
                 const exprt rhs_expr=
                   arg_out_transformer(
                     a_out,
@@ -600,7 +600,7 @@ exprt ssa_inlinert::get_replace_params(
                       param_out_member_transformer(
                         p_out,
                         component,
-                        summary.globals_out);
+                        summary->globals_out);
                     const exprt rhs_comp_expr=
                       arg_out_member_transformer(a_out, component, SSA, loc);
                     binding.push_back(
@@ -657,7 +657,7 @@ void ssa_inlinert::replace_params(
 exprt ssa_inlinert::get_replace_globals_out(
   const local_SSAt::var_sett &cs_globals_in,
   const local_SSAt::var_sett &cs_globals_out,
-  const summaryt &summary,
+  const summaryt *summary,
   const function_application_exprt &funapp_expr,
   const local_SSAt &SSA,
   local_SSAt::locationt loc)
@@ -676,7 +676,7 @@ exprt ssa_inlinert::get_replace_globals_out(
        std::string::npos)
     {
       if(!cs_heap_covered(*it) &&
-         !find_corresponding_symbol(*it, summary.globals_out, lhs))
+         !find_corresponding_symbol(*it, summary->globals_out, lhs))
       {
         assert(find_corresponding_symbol(*it, cs_globals_in, lhs));
         c.push_back(equal_exprt(lhs, rhs));
@@ -684,7 +684,7 @@ exprt ssa_inlinert::get_replace_globals_out(
     }
     else
     {
-      if(find_corresponding_symbol(*it, summary.globals_out, lhs))
+      if(find_corresponding_symbol(*it, summary->globals_out, lhs))
       {
         // Bind function return value
         rename(lhs);
@@ -706,7 +706,7 @@ exprt ssa_inlinert::get_replace_globals_out(
               SSA.ssa_value_ai[next_loc],
               SSA.ns);
           std::list<exprt> callee_deref=
-            apply_dereference(callee_global, summary.value_domain_out, SSA.ns);
+            apply_dereference(callee_global, summary->value_domain_out, SSA.ns);
 
           if(!callee_deref.empty())
           {
@@ -722,7 +722,7 @@ exprt ssa_inlinert::get_replace_globals_out(
                 {
                   exprt::operandst binding;
                   const exprt lhs_expr=
-                    param_out_transformer(callee, type, summary.globals_out);
+                    param_out_transformer(callee, type, summary->globals_out);
                   const exprt rhs_expr=
                     arg_out_transformer(
                       caller,
@@ -740,7 +740,7 @@ exprt ssa_inlinert::get_replace_globals_out(
                         param_out_member_transformer(
                           callee,
                           component,
-                          summary.globals_out);
+                          summary->globals_out);
                       const exprt rhs_comp_expr=
                         arg_out_member_transformer(caller, component, SSA, loc);
                       binding.push_back(
@@ -768,7 +768,7 @@ exprt ssa_inlinert::get_replace_globals_out(
       }
       else
       {
-        if(find_corresponding_symbol(*it, summary.globals_out, lhs))
+        if(find_corresponding_symbol(*it, summary->globals_out, lhs))
           rename(lhs);
         else
           assert(find_corresponding_symbol(*it, cs_globals_in, lhs));

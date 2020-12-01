@@ -103,7 +103,7 @@ void summary_checker_ait::report_preconditions()
     exprt precondition;
     bool computed=summary_db.exists(it->first);
     if(computed)
-      precondition=summary_db.get(it->first).bw_precondition;
+      precondition=summary_db.get(it->first)->bw_precondition;
     if(precondition.is_nil())
       computed=false;
     result() << eom << "[" << it->first << "]: " <<
@@ -127,7 +127,7 @@ property_checkert::resultt summary_checker_ait::report_termination()
     bool computed=summary_db.exists(it->first);
     if(computed)
     {
-      terminates=summary_db.get(it->first).terminates;
+      terminates=summary_db.get(it->first)->terminates;
       not_computed=false;
     }
     all_terminate=all_terminate && (terminates==YES);

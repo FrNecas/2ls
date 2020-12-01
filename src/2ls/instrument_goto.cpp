@@ -126,29 +126,29 @@ void instrument_gotot::instrument_function(
   if(!summary_db.exists(function_name))
     return;
 
-  const summaryt summary=summary_db.get(function_name);
+  const summaryt *summary=summary_db.get(function_name);
 
   if(!ssa_db.exists(function_name))
     return;
 
   const local_SSAt &SSA=ssa_db.get(function_name);
 
-  if(summary.fw_invariant.is_nil())
+  if(summary->fw_invariant.is_nil())
     return;
-  if(summary.fw_invariant.is_true())
+  if(summary->fw_invariant.is_true())
     return;
 
   // expected format /\_i g_i=> inv_i
-  if(summary.fw_invariant.id()==ID_implies)
+  if(summary->fw_invariant.id()==ID_implies)
   {
-    instrument_body(SSA, summary.fw_invariant, function);
+    instrument_body(SSA, summary->fw_invariant, function);
   }
-  else if(summary.fw_invariant.id()==ID_and)
+  else if(summary->fw_invariant.id()==ID_and)
   {
-    for(unsigned i=0; i<summary.fw_invariant.operands().size(); i++)
+    for(unsigned i=0; i<summary->fw_invariant.operands().size(); i++)
     {
-      assert(summary.fw_invariant.operands()[i].id()==ID_implies);
-      instrument_body(SSA, summary.fw_invariant.operands()[i], function);
+      assert(summary->fw_invariant.operands()[i].id()==ID_implies);
+      instrument_body(SSA, summary->fw_invariant.operands()[i], function);
     }
   }
   else

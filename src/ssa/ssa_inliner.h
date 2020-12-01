@@ -33,7 +33,7 @@ public:
     const local_SSAt &SSA,
     local_SSAt::nodest::const_iterator n_it,
     local_SSAt::nodet::function_callst::const_iterator f_it,
-    const summaryt &summary,
+    const summaryt *summary,
     bool forward,
     exprt::operandst &summaries,
     exprt::operandst &bindings);
@@ -52,7 +52,7 @@ public:
     local_SSAt::nodet::function_callst::iterator f_it,
     const local_SSAt::var_sett &cs_globals_in, // incoming globals at call site
     const local_SSAt::var_sett &cs_globals_out, // outgoing globals at call site
-    const summaryt &summary,
+    const summaryt *summary,
     bool forward,
     bool preconditions_as_assertions);
 
@@ -141,12 +141,12 @@ protected:
     const local_SSAt::var_sett &cs_globals_in,
     const local_SSAt::var_sett &cs_globals_out,
     const local_SSAt &SSA,
-    const summaryt &summary,
+    const summaryt *summary,
     const local_SSAt::locationt &loc);
   exprt get_replace_globals_out(
     const local_SSAt::var_sett &cs_globals_in,
     const local_SSAt::var_sett &cs_globals_out,
-    const summaryt &summary,
+    const summaryt *summary,
     const function_application_exprt &funapp_expr,
     const local_SSAt &SSA,
     local_SSAt::locationt loc);

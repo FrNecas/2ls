@@ -69,7 +69,7 @@ void show_raw_countermodel(
 
 void show_invariants(
   const local_SSAt &SSA,
-  const summaryt &summary,
+  const summaryt *summary,
   std::ostream &out);
 
 void show_ssa_symbols(

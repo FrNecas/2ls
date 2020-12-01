@@ -99,20 +99,20 @@ void summaryt::combine_or(exprt &olde, const exprt &newe)
   }
 }
 
-void summaryt::join(const summaryt &new_summary)
+void summaryt::join(const summaryt *new_summary)
 {
-  assert(params==new_summary.params);
-  assert(globals_in==new_summary.globals_in);
-  assert(globals_out==new_summary.globals_out);
-  combine_or(fw_precondition, new_summary.fw_precondition);
-  combine_and(fw_transformer, new_summary.fw_transformer);
-  combine_and(fw_invariant, new_summary.fw_invariant);
-  combine_and(bw_precondition, new_summary.bw_precondition);
-  combine_or(bw_postcondition, new_summary.bw_postcondition);
-  combine_and(bw_transformer, new_summary.bw_transformer);
-  combine_and(bw_invariant, new_summary.bw_invariant);
-  combine_and(termination_argument, new_summary.termination_argument);
-  switch(new_summary.terminates)
+  assert(params==new_summary->params);
+  assert(globals_in==new_summary->globals_in);
+  assert(globals_out==new_summary->globals_out);
+  combine_or(fw_precondition, new_summary->fw_precondition);
+  combine_and(fw_transformer, new_summary->fw_transformer);
+  combine_and(fw_invariant, new_summary->fw_invariant);
+  combine_and(bw_precondition, new_summary->bw_precondition);
+  combine_or(bw_postcondition, new_summary->bw_postcondition);
+  combine_and(bw_transformer, new_summary->bw_transformer);
+  combine_and(bw_invariant, new_summary->bw_invariant);
+  combine_and(termination_argument, new_summary->termination_argument);
+  switch(new_summary->terminates)
   {
   case YES:
     break;

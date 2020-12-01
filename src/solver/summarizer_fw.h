@@ -51,7 +51,7 @@ protected:
   void do_summary(
     const function_namet &function_name,
     local_SSAt &SSA,
-    summaryt &summary,
+    summaryt *summary,
     exprt cond, // additional constraints
     bool forward);
 };

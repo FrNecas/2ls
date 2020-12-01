@@ -41,7 +41,7 @@ void summarizer_bwt::summarize()
   {
     status() << "\nSummarizing function " << f.first << eom;
     if(summary_db.exists(f.first) &&
-       summary_db.get(f.first).bw_precondition.is_nil())
+       summary_db.get(f.first)->bw_precondition.is_nil())
       compute_summary_rec(f.first, postcondition, false);
     else
       status() << "Skipping function " << f.first << eom;
@@ -72,7 +72,7 @@ void summarizer_bwt::compute_summary_rec(
 {
   local_SSAt &SSA=ssa_db.get(function_name);
 
-  const summaryt &old_summary=summary_db.get(function_name);
+  summaryt *old_summary=summary_db.get(function_name);
 
   // recursively compute summaries for function calls
   inline_summaries(
@@ -86,11 +86,11 @@ void summarizer_bwt::compute_summary_rec(
   status() << "Analyzing function "  << function_name << eom;
 
   // create summary
-  summaryt summary;
-  summary.params=SSA.params;
-  summary.globals_in=SSA.globals_in;
-  summary.globals_out=SSA.globals_out;
-  summary.bw_postcondition=postcondition;
+  auto summary=new summaryt();
+  summary->params=SSA.params;
+  summary->globals_in=SSA.globals_in;
+  summary->globals_out=SSA.globals_out;
+  summary->bw_postcondition=postcondition;
 
   if(!options.get_bool_option("havoc"))
   {
@@ -103,7 +103,7 @@ void summarizer_bwt::compute_summary_rec(
   {
     std::ostringstream out;
     out << std::endl << "Summary for function " << function_name << std::endl;
-    summary_db.get(function_name).output(out, SSA.ns);
+    summary_db.get(function_name)->output(out, SSA.ns);
     status() << out.str() << eom;
   }
 }
@@ -111,8 +111,8 @@ void summarizer_bwt::compute_summary_rec(
 void summarizer_bwt::do_summary(
   const function_namet &function_name,
   local_SSAt &SSA,
-  const summaryt &old_summary,
-  summaryt &summary,
+  const summaryt *old_summary,
+  summaryt *summary,
   bool context_sensitive)
 {
   bool sufficient=options.get_bool_option("sufficient");
@@ -128,8 +128,8 @@ void summarizer_bwt::do_summary(
   template_generator(solver.next_domain_number(), SSA, false);
 
   exprt::operandst c;
-  c.push_back(old_summary.fw_precondition);
-  c.push_back(old_summary.fw_invariant);
+  c.push_back(old_summary->fw_precondition);
+  c.push_back(old_summary->fw_invariant);
   c.push_back(ssa_inliner.get_summaries(SSA)); // forward summaries
   exprt::operandst postcond;
   ssa_inliner.get_summaries(SSA, false, postcond, c); // backward summaries
@@ -149,9 +149,11 @@ void summarizer_bwt::do_summary(
     analyzer.set_message_handler(get_message_handler());
     analyzer(solver, SSA, conjunction(c), template_generator);
     analyzer.get_result(
-      summary.bw_transformer, template_generator.inout_vars());
-    analyzer.get_result(summary.bw_invariant, template_generator.loop_vars());
-    analyzer.get_result(summary.bw_precondition, template_generator.out_vars());
+      summary->bw_transformer, template_generator.inout_vars());
+    analyzer.get_result(summary->bw_invariant, template_generator.loop_vars());
+    analyzer.get_result(
+      summary->bw_precondition,
+      template_generator.out_vars());
 
     // statistics
     solver_instances+=analyzer.get_number_of_solver_instances();
@@ -170,34 +172,34 @@ void summarizer_bwt::do_summary(
     if(solver()==decision_proceduret::D_UNSATISFIABLE)
       result=false_exprt();
     solver.pop_context();
-    summary.bw_transformer=result;
-    summary.bw_invariant=result;
-    summary.bw_precondition=result;
+    summary->bw_transformer=result;
+    summary->bw_invariant=result;
+    summary->bw_precondition=result;
   }
 #endif
 
   if(sufficient)
   {
-    summary.bw_transformer=not_exprt(summary.bw_transformer);
-    summary.bw_invariant=not_exprt(summary.bw_invariant);
-    summary.bw_precondition=not_exprt(summary.bw_precondition);
+    summary->bw_transformer=not_exprt(summary->bw_transformer);
+    summary->bw_invariant=not_exprt(summary->bw_invariant);
+    summary->bw_precondition=not_exprt(summary->bw_precondition);
   }
 
-  if(context_sensitive && !summary.bw_postcondition.is_true())
+  if(context_sensitive && !summary->bw_postcondition.is_true())
   {
-    summary.bw_transformer=
-      implies_exprt(summary.bw_postcondition, summary.bw_transformer);
-    summary.bw_invariant=
-      implies_exprt(summary.bw_postcondition, summary.bw_invariant);
-    summary.bw_precondition=
-      implies_exprt(summary.bw_postcondition, summary.bw_precondition);
+    summary->bw_transformer=
+      implies_exprt(summary->bw_postcondition, summary->bw_transformer);
+    summary->bw_invariant=
+      implies_exprt(summary->bw_postcondition, summary->bw_invariant);
+    summary->bw_precondition=
+      implies_exprt(summary->bw_postcondition, summary->bw_precondition);
   }
 }
 
 void summarizer_bwt::inline_summaries(
   const function_namet &function_name,
   local_SSAt &SSA,
-  const summaryt &old_summary,
+  summaryt *old_summary,
   const exprt &postcondition,
   bool context_sensitive,
   bool sufficient)
@@ -247,7 +249,7 @@ void summarizer_bwt::inline_summaries(
 void summarizer_bwt::collect_postconditions(
   const function_namet &function_name,
   const local_SSAt &SSA,
-  const summaryt &summary,
+  const summaryt *summary,
   exprt::operandst &postconditions,
   bool sufficient)
 {
@@ -264,9 +266,9 @@ void summarizer_bwt::collect_postconditions(
 
   exprt guard=SSA.guard_symbol(--SSA.goto_function.body.instructions.end());
   if(!sufficient)
-    postconditions.push_back(and_exprt(guard, summary.bw_postcondition));
+    postconditions.push_back(and_exprt(guard, summary->bw_postcondition));
   else
-    postconditions.push_back(implies_exprt(guard, summary.bw_postcondition));
+    postconditions.push_back(implies_exprt(guard, summary->bw_postcondition));
 }
 
 /// returns false if the summary needs to be recomputed
@@ -289,13 +291,13 @@ bool summarizer_bwt::check_postcondition(
   if(!summary_db.exists(fname))
     return true; // nothing to do
 
-  summaryt summary=summary_db.get(fname);
+  summaryt *summary=summary_db.get(fname);
 
-  if(summary.bw_precondition.is_nil())
+  if(summary->bw_precondition.is_nil())
     return false; // there is work to do
 
   if(!context_sensitive ||
-     summary.fw_precondition.is_true())  // precondition trivially holds
+     summary->fw_precondition.is_true())  // precondition trivially holds
   {
     status() << "Precondition trivially holds, replacing by summary."
              << eom;
@@ -304,14 +306,14 @@ bool summarizer_bwt::check_postcondition(
   }
   else
   {
-    assertion=summary.bw_precondition;
+    assertion=summary->bw_precondition;
 
     // getting globals at call site
     local_SSAt::var_sett cs_globals_in;
     SSA.get_globals(n_it->location, cs_globals_in);
 
     ssa_inliner.rename_to_caller(
-      f_it, summary.params, cs_globals_in, summary.globals_in, assertion);
+      f_it, summary->params, cs_globals_in, summary->globals_in, assertion);
 
     debug() << "precondition assertion: " <<
       from_expr(SSA.ns, "", assertion) << eom;
@@ -366,7 +368,7 @@ bool summarizer_bwt::check_postcondition(
 exprt summarizer_bwt::compute_calling_context2(
   const function_namet &function_name,
   local_SSAt &SSA,
-  summaryt old_summary,
+  summaryt *old_summary,
   local_SSAt::nodest::const_iterator n_it,
   local_SSAt::nodet::function_callst::const_iterator f_it,
   const exprt &postcondition,
@@ -397,12 +399,12 @@ exprt summarizer_bwt::compute_calling_context2(
   SSA.get_globals(n_it->location, cs_globals_out[f_it], false);
 
   exprt::operandst c;
-  c.push_back(old_summary.fw_precondition);
-  c.push_back(old_summary.fw_invariant);
+  c.push_back(old_summary->fw_precondition);
+  c.push_back(old_summary->fw_invariant);
   c.push_back(ssa_inliner.get_summaries(SSA)); // forward summaries
   exprt::operandst postcond;
   ssa_inliner.get_summaries(SSA, false, postcond, c); // backward summaries
-  old_summary.bw_postcondition=postcondition; // that's a bit awkward
+  old_summary->bw_postcondition=postcondition; // that's a bit awkward
   collect_postconditions(function_name, SSA, old_summary, postcond, sufficient);
   if(!sufficient)
   {

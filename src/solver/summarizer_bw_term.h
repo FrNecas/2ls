@@ -47,19 +47,19 @@ protected:
   void do_summary_term(
     const function_namet &function_name,
     local_SSAt &SSA,
-    const summaryt &old_summary,
-    summaryt &summary,
+    const summaryt *old_summary,
+    summaryt *summary,
     bool context_sensitive);
 
   void do_nontermination(
     const function_namet &function_name,
     local_SSAt &SSA,
-    const summaryt &old_summary,
-    summaryt &summary);
+    const summaryt *old_summary,
+    summaryt *summary);
 
   bool bootstrap_preconditions(
     local_SSAt &SSA,
-    summaryt &summary,
+    summaryt *summary,
     incremental_solvert &solver,
     template_generator_rankingt &template_generator1,
     template_generator_summaryt &template_generator2,
@@ -73,7 +73,7 @@ protected:
 
   exprt compute_precondition(
     local_SSAt &SSA,
-    summaryt &summary,
+    summaryt *summary,
     const exprt::operandst &postconditions,
     incremental_solvert &solver,
     template_generator_summaryt &template_generator,

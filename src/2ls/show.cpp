@@ -323,25 +323,25 @@ void show_invariant(
 
 void show_invariants(
   const local_SSAt &SSA,
-  const summaryt &summary,
+  const summaryt *summary,
   std::ostream &out)
 {
-  if(summary.fw_invariant.is_nil())
+  if(summary->fw_invariant.is_nil())
     return;
-  if(summary.fw_invariant.is_true())
+  if(summary->fw_invariant.is_true())
     return;
 
   // expected format /\_i g_i=> inv_i
-  if(summary.fw_invariant.id()==ID_implies)
+  if(summary->fw_invariant.id()==ID_implies)
   {
-    show_invariant(SSA, summary.fw_invariant, out);
+    show_invariant(SSA, summary->fw_invariant, out);
   }
-  else if(summary.fw_invariant.id()==ID_and)
+  else if(summary->fw_invariant.id()==ID_and)
   {
-    for(unsigned i=0; i<summary.fw_invariant.operands().size(); i++)
+    for(unsigned i=0; i<summary->fw_invariant.operands().size(); i++)
     {
-      assert(summary.fw_invariant.operands()[i].id()==ID_implies);
-      show_invariant(SSA, summary.fw_invariant.operands()[i], out);
+      assert(summary->fw_invariant.operands()[i].id()==ID_implies);
+      show_invariant(SSA, summary->fw_invariant.operands()[i], out);
     }
   }
   else
