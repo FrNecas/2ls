@@ -81,9 +81,9 @@ void local_SSAt::get_entry_exit_vars()
   get_globals(first, globals_in, true, false); // filters out #return_value
 
   // get globals out (includes return value)
-  goto_programt::const_targett
-    last=goto_function.body.instructions.end(); last--;
-  get_globals(last, globals_out, true, true, last->function);
+  goto_programt::const_targett last=goto_function.body.instructions.end();
+  last--;
+  get_globals(last, globals_out, true, true, function_name);
 }
 
 void local_SSAt::get_globals(
