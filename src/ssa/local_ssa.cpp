@@ -18,7 +18,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <util/prefix.h>
 #include <util/expr_util.h>
-#include <util/decision_procedure.h>
+#include <solvers/decision_procedure.h>
 #include <util/byte_operators.h>
 
 #include <goto-symex/adjust_float_expressions.h>
