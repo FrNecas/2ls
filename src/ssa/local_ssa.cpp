@@ -21,7 +21,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <solvers/decision_procedure.h>
 #include <util/byte_operators.h>
 
-#include <goto-symex/adjust_float_expressions.h>
+#include <goto-programs/adjust_float_expressions.h>
 
 #include "local_ssa.h"
 #include "ssa_dereference.h"
