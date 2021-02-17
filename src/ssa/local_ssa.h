@@ -39,11 +39,12 @@ public:
 
   inline local_SSAt(
     const goto_functiont &_goto_function,
+    const irep_idt &_function_name,
     const namespacet &_ns,
     const optionst &_options,
     const std::string &_suffix=""):
-    ns(_ns), goto_function(_goto_function), options(_options),
-    ssa_objects(_goto_function, ns),
+    ns(_ns), goto_function(_goto_function), function_name(_function_name),
+    options(_options), ssa_objects(_goto_function, ns),
     ssa_value_ai(_goto_function, ns, options),
     assignments(
       _goto_function.body,
@@ -170,6 +171,7 @@ public:
 
   const namespacet &ns;
   const goto_functiont &goto_function;
+  const irep_idt &function_name;
   const optionst &options;
 
   // guards

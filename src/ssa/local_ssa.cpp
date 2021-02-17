@@ -30,7 +30,7 @@ Author: Daniel Kroening, kroening@kroening.com
 void local_SSAt::build_SSA()
 {
   // perform SSA data-flow analysis
-  ssa_analysis(goto_function, ns);
+  ssa_analysis(function_name, goto_function, ns);
 
   forall_goto_program_instructions(i_it, goto_function.body)
   {

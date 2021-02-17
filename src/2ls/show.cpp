@@ -78,6 +78,7 @@ void show_assignments(
 
 void show_defs(
   const goto_functionst::goto_functiont &goto_function,
+  const irep_idt &function,
   const namespacet &ns,
   const optionst &options,
   std::ostream &out)
@@ -91,8 +92,8 @@ void show_defs(
     ssa_objects,
     ssa_value_ai);
   ssa_ait ssa_analysis(assignments);
-  ssa_analysis(goto_function, ns);
-  ssa_analysis.output(ns, goto_function.body, out);
+  ssa_analysis(function, goto_function, ns);
+  ssa_analysis.output(ns, function, goto_function.body, out);
 }
 
 void show_defs(
@@ -111,7 +112,7 @@ void show_defs(
     if(f_it==goto_model.goto_functions.function_map.end())
       out << "function " << function << " not found\n";
     else
-      show_defs(f_it->second, ns, options, out);
+      show_defs(f_it->second, function, ns, options, out);
   }
   else
   {
@@ -119,7 +120,7 @@ void show_defs(
     {
       out << ">>>> Function " << f_it->first << "\n";
 
-      show_defs(f_it->second, ns, options, out);
+      show_defs(f_it->second, f_it->first, ns, options, out);
 
       out << "\n";
     }

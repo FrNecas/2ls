@@ -69,7 +69,8 @@ public:
     const goto_functionst::goto_functiont &goto_function,
     const namespacet &ns)
   {
-    store[function_name]=new unwindable_local_SSAt(goto_function, ns, options);
+    store[function_name]=new unwindable_local_SSAt(goto_function, function_name,
+                                                   ns, options);
   }
 
 protected:
