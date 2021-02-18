@@ -414,10 +414,8 @@ void local_SSAt::build_function_call(locationt loc)
     }
 
     // turn function call into expression
-    function_application_exprt f;
-    f.function()=code_function_call.function();
-    f.type()=code_function_call.lhs().type();
-    f.arguments()=code_function_call.arguments();
+    function_application_exprt f = {code_function_call.function(),
+                                    code_function_call.arguments()};
 
     // access to "new" value in template declarations
     if(code_function_call.function().id()==ID_symbol &&
