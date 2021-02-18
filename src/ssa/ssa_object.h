@@ -19,17 +19,6 @@ class ssa_objectt
 {
 public:
   // type specialisation for object identifiers
-  class identifiert:public irep_idt
-  {
-  public:
-    inline explicit identifiert(const irep_idt &_src):irep_idt(_src)
-    {
-    }
-
-    inline identifiert()
-    {
-    }
-  };
 
   inline explicit ssa_objectt(const exprt &_expr, const namespacet &_ns):
     expr(_expr),
@@ -47,7 +36,7 @@ public:
     return expr;
   }
 
-  inline identifiert get_identifier() const
+  inline irep_idt get_identifier() const
   {
     return identifier;
   }
@@ -111,14 +100,14 @@ public:
     expr.set(ID_it_init_value_level, expr.get(ID_pointed_level));
     const irep_idt new_id=id2string(pointer_id)+id2string("'it");
     to_symbol_expr(expr).set_identifier(new_id);
-    identifier=identifiert(new_id);
+    identifier=irep_idt(new_id);
   }
 
 protected:
   exprt expr;
-  identifiert identifier;
+  irep_idt identifier;
 
-  static identifiert object_id_rec(const exprt &src, const namespacet &);
+  static irep_idt object_id_rec(const exprt &src, const namespacet &);
   static exprt get_root_object_rec(const exprt &);
 };
 
