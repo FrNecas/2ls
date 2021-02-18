@@ -26,9 +26,9 @@ void list_iteratort::add_access(
   accesst access;
   access.location=location_number;
 
-  unsigned level=pointed_level(expr.compound());
-  unsigned iterator_level=it_value_level(expr.compound());
-  for(unsigned l=iterator_level; l<level; ++l)
+  std::size_t level=pointed_level(expr.compound());
+  std::size_t iterator_level=it_value_level(expr.compound());
+  for(std::size_t l=iterator_level; l<level; ++l)
   {
     access.fields.push_back(pointer_level_field(expr.compound(), l));
   }

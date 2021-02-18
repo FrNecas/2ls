@@ -1486,7 +1486,7 @@ void local_SSAt::new_iterator_access(
   exprt pointer_rhs=read_rhs(pointer_symbol.symbol_expr(), loc);
   assert(pointer_rhs.id()==ID_symbol);
 
-  unsigned init_value_level=expr.compound().get_unsigned_int(
+  std::size_t init_value_level=expr.compound().get_size_t(
     ID_it_init_value_level);
   const exprt init_pointer=get_pointer(expr.compound(), init_value_level-1);
 

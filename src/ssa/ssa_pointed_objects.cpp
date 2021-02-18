@@ -12,12 +12,12 @@ Author: Viktor Malik
 #include "ssa_pointed_objects.h"
 #include "ssa_object.h"
 
-const irep_idt level_str(const unsigned level, const irep_idt &suffix)
+const irep_idt level_str(const std::size_t level, const irep_idt &suffix)
 {
   return "#lvl_"+std::to_string(level)+"_"+id2string(suffix);
 }
 
-const irep_idt it_field_str(const unsigned level)
+const irep_idt it_field_str(const std::size_t level)
 {
   return id2string(ID_it_field)+"_"+std::to_string(level);
 }
@@ -31,9 +31,9 @@ void copy_iterator(exprt &dest, const exprt &src)
     dest.set(ID_it_init_value, src.get(ID_it_init_value));
     dest.set(ID_it_init_value_level, src.get(ID_it_init_value_level));
 
-    unsigned field_cnt=src.get_unsigned_int(ID_it_field_cnt);
+    std::size_t field_cnt=src.get_size_t(ID_it_field_cnt);
     dest.set(ID_it_field_cnt, field_cnt);
-    for(unsigned i=0; i<field_cnt; ++i)
+    for(std::size_t i=0; i<field_cnt; ++i)
     {
       const irep_idt field=src.get(it_field_str(i));
       dest.set(it_field_str(i), field);
@@ -41,13 +41,16 @@ void copy_iterator(exprt &dest, const exprt &src)
   }
 }
 
-void copy_pointed_info(exprt &dest, const exprt &src, const unsigned max_level)
+void copy_pointed_info(
+  exprt &dest,
+  const exprt &src,
+  const std::size_t max_level)
 {
   if(max_level<pointed_level(src))
   {
     dest.set(ID_pointed, true);
     dest.set(ID_pointed_level, max_level+1);
-    for(unsigned l=0; l<=max_level; ++l)
+    for(std::size_t l=0; l<=max_level; ++l)
     {
       const irep_idt lvl_pointed_id=src.get(level_str(l, ID_pointer_id));
       dest.set(level_str(l, ID_pointer_id), lvl_pointed_id);
@@ -82,7 +85,7 @@ symbol_exprt pointed_object(const exprt &expr, const namespacet &ns)
       id2string(ssa_object.get_identifier())+"'obj", ns.follow(pointed_type));
     pointed.set(ID_pointed, true);
 
-    unsigned level=0;
+    std::size_t level=0;
     const exprt root_obj=ssa_object.get_root_object();
     if(root_obj.get_bool(ID_pointed))
     {
@@ -132,28 +135,28 @@ symbol_exprt pointed_object(const exprt &expr, const namespacet &ns)
 const irep_idt pointer_root_id(const exprt &expr)
 {
   assert(expr.get_bool(ID_pointed));
-  unsigned max_level_index=expr.get_unsigned_int(ID_pointed_level)-1;
+  std::size_t max_level_index=expr.get_size_t(ID_pointed_level)-1;
   if(expr.get(level_str(max_level_index, ID_pointer_id))==ID_symbol)
     return expr.get(level_str(max_level_index, ID_pointer_sym));
   else
     return expr.get(level_str(max_level_index, ID_pointer_compound));
 }
 
-unsigned pointed_level(const exprt &expr)
+std::size_t pointed_level(const exprt &expr)
 {
   if(is_pointed(expr))
-    return expr.get_unsigned_int(ID_pointed_level);
+    return expr.get_size_t(ID_pointed_level);
   else
     return 0;
 }
 
-const irep_idt pointer_level_field(const exprt &expr, const unsigned level)
+const irep_idt pointer_level_field(const exprt &expr, const std::size_t level)
 {
   assert(expr.get(level_str(level, ID_pointer_id))==ID_member);
   return expr.get(level_str(level, ID_pointer_field));
 }
 
-const exprt get_pointer(const exprt &expr, unsigned level)
+const exprt get_pointer(const exprt &expr, std::size_t level)
 {
   exprt pointer;
 
@@ -182,10 +185,10 @@ const exprt get_pointer(const exprt &expr, unsigned level)
   return pointer;
 }
 
-unsigned it_value_level(const exprt &expr)
+std::size_t it_value_level(const exprt &expr)
 {
   assert(expr.get_bool(ID_pointed));
-  return expr.get_unsigned_int(ID_it_init_value_level);
+  return expr.get_size_t(ID_it_init_value_level);
 }
 
 bool is_pointed(const exprt &expr)
@@ -254,9 +257,9 @@ void set_iterator_fields(exprt &dest, const std::vector<irep_idt> fields)
 const std::vector<irep_idt> get_iterator_fields(const exprt &expr)
 {
   assert(is_iterator(expr));
-  unsigned cnt=expr.get_unsigned_int(ID_it_field_cnt);
+  std::size_t cnt=expr.get_size_t(ID_it_field_cnt);
   std::vector<irep_idt> result;
-  for(unsigned i=0; i<cnt; ++i)
+  for(std::size_t i=0; i<cnt; ++i)
   {
     result.push_back(expr.get(it_field_str(i)));
   }
@@ -265,19 +268,19 @@ const std::vector<irep_idt> get_iterator_fields(const exprt &expr)
 
 const std::vector<irep_idt> pointer_fields(
   const exprt &expr,
-  const unsigned from_level)
+  const std::size_t from_level)
 {
   std::vector<irep_idt> result;
-  unsigned max_level=pointed_level(expr);
+  std::size_t max_level=pointed_level(expr);
   assert(from_level<max_level);
-  for(unsigned l=from_level; l<max_level; ++l)
+  for(std::size_t l=from_level; l<max_level; ++l)
   {
     result.push_back(pointer_level_field(expr, l));
   }
   return result;
 }
 
-const exprt get_pointer_root(const exprt &expr, unsigned level)
+const exprt get_pointer_root(const exprt &expr, std::size_t level)
 {
   exprt pointer=get_pointer(expr, level);
   if(pointer.id()==ID_member)

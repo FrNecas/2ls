@@ -34,20 +34,23 @@ symbol_exprt pointed_object(const exprt &expr, const namespacet &ns);
 bool is_pointed(const exprt &expr);
 bool is_iterator(const exprt &expr);
 
-unsigned pointed_level(const exprt &expr);
-unsigned it_value_level(const exprt &expr);
+std::size_t pointed_level(const exprt &expr);
+std::size_t it_value_level(const exprt &expr);
 
 const irep_idt pointer_root_id(const exprt &expr);
-const irep_idt pointer_level_field(const exprt &expr, const unsigned level);
+const irep_idt pointer_level_field(const exprt &expr, const std::size_t level);
 const std::vector<irep_idt> pointer_fields(
   const exprt &expr,
-  const unsigned from_level);
+  const std::size_t from_level);
 
-const exprt get_pointer(const exprt &expr, unsigned level);
-const exprt get_pointer_root(const exprt &expr, unsigned level);
+const exprt get_pointer(const exprt &expr, std::size_t level);
+const exprt get_pointer_root(const exprt &expr, std::size_t level);
 const irep_idt get_pointer_id(const exprt &expr);
 
-void copy_pointed_info(exprt &dest, const exprt &src, const unsigned max_level);
+void copy_pointed_info(
+  exprt &dest,
+  const exprt &src,
+  const std::size_t max_level);
 void copy_pointed_info(exprt &dest, const exprt &src);
 void copy_iterator(exprt &dest, const exprt &src);
 

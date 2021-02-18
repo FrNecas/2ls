@@ -483,7 +483,7 @@ bool ssa_value_domaint::valuest::merge(
     {
       if(is_pointed(v.get_expr()))
       {
-        unsigned level=pointed_level(v.get_expr())-1;
+        std::size_t level=pointed_level(v.get_expr())-1;
         exprt expr=v.get_expr();
 
         auto it=value_set.end();
