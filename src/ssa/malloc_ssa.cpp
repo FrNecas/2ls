@@ -244,7 +244,7 @@ static bool replace_malloc_rec(
   bool alloc_concrete)
 {
   if(expr.id()==ID_side_effect &&
-     to_side_effect_expr(expr).get_statement()==ID_malloc)
+     to_side_effect_expr(expr).get_statement()==ID_allocate)
   {
     assert(!malloc_size.is_nil());
     expr.op0()=malloc_size;

@@ -757,7 +757,7 @@ void twols_parse_optionst::expr_stats_rec(
     const side_effect_exprt &side_effect_expr=to_side_effect_expr(expr);
     const irep_idt &statement=side_effect_expr.get_statement();
 
-    if(statement==ID_malloc)
+    if(statement==ID_allocate)
     {
       stats.has_malloc=true;
     }

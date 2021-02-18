@@ -896,7 +896,7 @@ void local_SSAt::replace_side_effects_rec(
       exprt s=nondet_symbol("ssa::nondet", expr.type(), loc, counter);
       expr.swap(s);
     }
-    else if(statement==ID_malloc)
+    else if(statement==ID_allocate)
     {
       assert(false);
 /*      counter++;
