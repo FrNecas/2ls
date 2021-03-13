@@ -1288,7 +1288,7 @@ void twols_parse_optionst::report_properties(
        it->second.result!=property_checkert::FAIL)
       continue;
 
-    if(get_ui()==ui_message_handlert::XML_UI)
+    if(get_ui()==ui_message_handlert::uit::XML_UI)
     {
       xmlt xml_result("result");
       xml_result.set_attribute("property", id2string(it->first));
@@ -1351,10 +1351,10 @@ void twols_parse_optionst::report_success()
 
   switch(get_ui())
   {
-  case ui_message_handlert::PLAIN:
+  case ui_message_handlert::uit::PLAIN:
     break;
 
-  case ui_message_handlert::XML_UI:
+  case ui_message_handlert::uit::XML_UI:
   {
     xmlt xml("cprover-status");
     xml.data="SUCCESS";
@@ -1376,12 +1376,12 @@ void twols_parse_optionst::show_counterexample(
 
   switch(get_ui())
   {
-  case ui_message_handlert::PLAIN:
+  case ui_message_handlert::uit::PLAIN:
     std::cout << std::endl << "Counterexample:" << std::endl;
     show_goto_trace(std::cout, ns, error_trace);
     break;
 
-  case ui_message_handlert::XML_UI:
+  case ui_message_handlert::uit::XML_UI:
   {
     xmlt xml;
     convert(ns, error_trace, xml);
@@ -1475,10 +1475,10 @@ void twols_parse_optionst::report_failure()
 
   switch(get_ui())
   {
-  case ui_message_handlert::PLAIN:
+  case ui_message_handlert::uit::PLAIN:
     break;
 
-  case ui_message_handlert::XML_UI:
+  case ui_message_handlert::uit::XML_UI:
   {
     xmlt xml("cprover-status");
     xml.data="FAILURE";
@@ -1498,10 +1498,10 @@ void twols_parse_optionst::report_unknown()
 
   switch(get_ui())
   {
-  case ui_message_handlert::PLAIN:
+  case ui_message_handlert::uit::PLAIN:
     break;
 
-  case ui_message_handlert::XML_UI:
+  case ui_message_handlert::uit::XML_UI:
   {
     xmlt xml("cprover-status");
     xml.data="UNKNOWN";
