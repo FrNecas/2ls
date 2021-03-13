@@ -1049,6 +1049,7 @@ bool twols_parse_optionst::process_goto_program(
   {
     status() << "Function Pointer Removal" << eom;
     remove_function_pointers(
+      get_message_handler(),
       goto_model,
       cmdline.isset("pointer-check"));
 
