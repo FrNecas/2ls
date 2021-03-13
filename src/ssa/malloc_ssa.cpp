@@ -321,7 +321,8 @@ bool replace_malloc(
              lhs_id=="__builtin_alloca::alloca_size")
           {
             namespacet ns(goto_model.symbol_table);
-            goto_functionst::goto_functiont function_copy=f_it->second;
+            goto_functionst::goto_functiont function_copy;
+            function_copy.copy_from(f_it->second);
             constant_propagator_ait const_propagator(function_copy, ns);
             forall_goto_program_instructions(copy_i_it, function_copy.body)
             {
