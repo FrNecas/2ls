@@ -42,10 +42,7 @@ public:
     solver_instances(0),
     solver_calls(0),
     summaries_used(0),
-    termargs_computed(0)
-  {
-    ssa_inliner.set_message_handler(get_message_handler());
-  }
+    termargs_computed(0) {}
 
   bool show_vcc, simplify, fixed_point;
   irep_idt function_to_check;
