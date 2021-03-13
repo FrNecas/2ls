@@ -15,8 +15,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/expr_util.h>
 #include <util/symbol.h>
 #include <util/pointer_offset_size.h>
+#include <util/c_types.h>
 
-#include <ansi-c/c_types.h>
 #include <analyses/constant_propagator.h>
 
 #include <functional>
