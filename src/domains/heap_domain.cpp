@@ -10,6 +10,7 @@ Author: Viktor Malik
 /// Abstract domain for representing heap
 
 #include "heap_domain.h"
+#include <util/std_expr.h>
 #include <algorithm>
 #include <memory>
 #include <ssa/address_canonizer.h>
@@ -98,7 +99,10 @@ exprt heap_domaint::value_to_ptr_exprt(const exprt &expr)
   {
     const std::string value=id2string(to_constant_expr(expr).get_value());
     if(value.substr(value.size()/2).find_first_not_of('0')!=std::string::npos)
-      return plus_exprt(expr.op0(), constant_exprt::integer_constant(0));
+    {
+      constant_exprt zero=constant_exprt("0", integer_typet());
+      return plus_exprt(expr.op0(), zero);
+    }
     else
       return expr.op0();
   }
