@@ -156,7 +156,7 @@ bool twols_parse_optionst::unwind_goto_into_loop(
         l_it->second,
         l_it->first,
         k,
-        goto_unwindt::PARTIAL, iteration_points);
+        goto_unwindt::unwind_strategyt::PARTIAL, iteration_points);
 
       assert(iteration_points.size()==2);
       goto_programt::targett t=body.insert_before(l_it->first);
