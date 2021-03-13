@@ -22,7 +22,8 @@ Author: Peter Schrammel
 
 void twols_parse_optionst::inline_main(goto_modelt &goto_model)
 {
-  goto_programt &main=goto_model.goto_functions.function_map[ID__start].body;
+  irep_idt start=goto_functionst::entry_point();
+  goto_programt &main=goto_model.goto_functions.function_map[start].body;
   goto_programt::targett target=main.instructions.begin();
   while(target!=main.instructions.end())
   {
