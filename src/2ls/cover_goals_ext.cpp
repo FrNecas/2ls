@@ -130,10 +130,10 @@ void cover_goals_extt::assignment()
     for(goal_mapt::const_iterator it=goal_map.begin();
         it!=goal_map.end(); it++, g_it++)
     {
-      if(property_map[it->first].result==property_checkert::UNKNOWN &&
+      if(property_map[it->first].result==property_checkert::resultt::UNKNOWN &&
          solver.l_get(g_it->condition).is_true())
       {
-        property_map[it->first].result=property_checkert::FAIL;
+        property_map[it->first].result=property_checkert::resultt::FAIL;
         if(build_error_trace)
         {
           ssa_build_goto_tracet build_goto_trace(SSA, solver.get_solver());
@@ -159,10 +159,10 @@ void cover_goals_extt::assignment()
     for(goal_mapt::const_iterator it=goal_map.begin();
         it!=goal_map.end(); it++, g_it++)
     {
-      if(property_map[it->first].result==property_checkert::UNKNOWN &&
+      if(property_map[it->first].result==property_checkert::resultt::UNKNOWN &&
          solver.l_get(g_it->condition).is_true())
       {
-        property_map[it->first].result=property_checkert::FAIL;
+        property_map[it->first].result=property_checkert::resultt::FAIL;
         if(build_error_trace)
         {
           ssa_build_goto_tracet build_goto_trace(SSA, solver.get_solver());

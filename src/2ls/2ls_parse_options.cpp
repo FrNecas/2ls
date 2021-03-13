@@ -633,7 +633,7 @@ int twols_parse_optionst::doit()
     // do actual analysis
     switch((*checker)(goto_model))
     {
-    case property_checkert::PASS:
+    case property_checkert::resultt::PASS:
       if(report_assertions)
         report_properties(options, goto_model, checker->property_map);
       report_success();
@@ -642,7 +642,7 @@ int twols_parse_optionst::doit()
       retval=0;
       break;
 
-    case property_checkert::FAIL:
+    case property_checkert::resultt::FAIL:
     {
       if(report_assertions)
         report_properties(options, goto_model, checker->property_map);
@@ -651,7 +651,7 @@ int twols_parse_optionst::doit()
       bool trace_valid=false;
       for(const auto &p : checker->property_map)
       {
-        if(p.second.result!=property_checkert::FAIL)
+        if(p.second.result!=property_checkert::resultt::FAIL)
           continue;
 
         if(options.get_bool_option("trace"))
@@ -681,7 +681,7 @@ int twols_parse_optionst::doit()
       retval=10;
       break;
     }
-    case property_checkert::UNKNOWN:
+    case property_checkert::resultt::UNKNOWN:
       if(report_assertions)
         report_properties(options, goto_model, checker->property_map);
       retval=5;
@@ -1285,7 +1285,7 @@ void twols_parse_optionst::report_properties(
 #endif
 
     if(!options.get_bool_option("all-properties") &&
-       it->second.result!=property_checkert::FAIL)
+       it->second.result!=property_checkert::resultt::FAIL)
       continue;
 
     if(get_ui()==ui_message_handlert::uit::XML_UI)
@@ -1307,10 +1307,10 @@ void twols_parse_optionst::report_properties(
     }
 
     if(options.get_bool_option("trace") &&
-       it->second.result==property_checkert::FAIL)
+       it->second.result==property_checkert::resultt::FAIL)
       show_counterexample(goto_model, it->second.error_trace);
     if(cmdline.isset("json-cex") &&
-       it->second.result==property_checkert::FAIL)
+       it->second.result==property_checkert::resultt::FAIL)
       output_json_cex(
         options,
         goto_model,
@@ -1330,9 +1330,9 @@ void twols_parse_optionst::report_properties(
         it!=property_map.end();
         it++)
     {
-      if(it->second.result==property_checkert::UNKNOWN)
+      if(it->second.result==property_checkert::resultt::UNKNOWN)
         unknown++;
-      if(it->second.result==property_checkert::FAIL)
+      if(it->second.result==property_checkert::resultt::FAIL)
         failed++;
     }
 
@@ -1401,7 +1401,7 @@ void twols_parse_optionst::output_graphml_cex(
 {
   for(const auto &p : summary_checker.property_map)
   {
-    if(p.second.result!=property_checkert::FAIL)
+    if(p.second.result!=property_checkert::resultt::FAIL)
       continue;
 
     const namespacet ns(goto_model.symbol_table);
