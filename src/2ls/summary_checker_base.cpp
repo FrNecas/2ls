@@ -435,18 +435,18 @@ bool summary_checker_baset::is_fully_unwound(
 
   switch(solver())
   {
-  case decision_proceduret::D_SATISFIABLE:
+  case decision_proceduret::resultt::D_SATISFIABLE:
     solver.pop_context();
     return false;
     break;
 
-  case decision_proceduret::D_UNSATISFIABLE:
+  case decision_proceduret::resultt::D_UNSATISFIABLE:
     solver.pop_context();
     solver << conjunction(loophead_selects);
     return true;
     break;
 
-  case decision_proceduret::D_ERROR:
+  case decision_proceduret::resultt::D_ERROR:
   default:
     throw "error from decision procedure";
   }
@@ -478,15 +478,15 @@ bool summary_checker_baset::is_spurious(
 
   switch(solver())
   {
-  case decision_proceduret::D_SATISFIABLE:
+  case decision_proceduret::resultt::D_SATISFIABLE:
     return false;
     break;
 
-  case decision_proceduret::D_UNSATISFIABLE:
+  case decision_proceduret::resultt::D_UNSATISFIABLE:
     return true;
     break;
 
-  case decision_proceduret::D_ERROR:
+  case decision_proceduret::resultt::D_ERROR:
   default:
     throw "error from decision procedure";
   }

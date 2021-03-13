@@ -84,10 +84,10 @@ void cover_goals_extt::operator()()
 
     switch(dec_result)
     {
-    case decision_proceduret::D_UNSATISFIABLE: // DONE
+    case decision_proceduret::resultt::D_UNSATISFIABLE: // DONE
       break;
 
-    case decision_proceduret::D_SATISFIABLE:
+    case decision_proceduret::resultt::D_SATISFIABLE:
       // mark the goals we got
       mark();
 
@@ -103,7 +103,7 @@ void cover_goals_extt::operator()()
       return;
     }
   }
-  while(dec_result==decision_proceduret::D_SATISFIABLE &&
+  while(dec_result==decision_proceduret::resultt::D_SATISFIABLE &&
         number_covered()<size());
 }
 
@@ -153,7 +153,7 @@ void cover_goals_extt::assignment()
 
   switch(solver())
   {
-  case decision_proceduret::D_SATISFIABLE:
+  case decision_proceduret::resultt::D_SATISFIABLE:
   {
     std::list<cover_goals_extt::cover_goalt>::const_iterator g_it=goals.begin();
     for(goal_mapt::const_iterator it=goal_map.begin();
@@ -179,10 +179,10 @@ void cover_goals_extt::assignment()
     }
     break;
   }
-  case decision_proceduret::D_UNSATISFIABLE:
+  case decision_proceduret::resultt::D_UNSATISFIABLE:
     break;
 
-  case decision_proceduret::D_ERROR:
+  case decision_proceduret::resultt::D_ERROR:
   default:
     throw "error from decision procedure";
   }

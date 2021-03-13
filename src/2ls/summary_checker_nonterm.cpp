@@ -363,11 +363,11 @@ void summary_checker_nontermt::check_properties_linear(
       solver << conjunction(first_linearity_check);
       switch(solver())
       {
-      case decision_proceduret::D_UNSATISFIABLE:
+      case decision_proceduret::resultt::D_UNSATISFIABLE:
           solver.pop_context();
         continue;
 
-      case decision_proceduret::D_SATISFIABLE:
+      case decision_proceduret::resultt::D_SATISFIABLE:
           for(exprt::operandst::iterator it=first_linearity_check.begin();
               it!=first_linearity_check.end();
               ++it)
@@ -393,11 +393,11 @@ void summary_checker_nontermt::check_properties_linear(
       solver << disjunction(second_linearity_check);
       switch(solver())
       {
-      case decision_proceduret::D_UNSATISFIABLE:
+      case decision_proceduret::resultt::D_UNSATISFIABLE:
           solver.pop_context();
         break;
 
-      case decision_proceduret::D_SATISFIABLE:
+      case decision_proceduret::resultt::D_SATISFIABLE:
           solver.pop_context();
         continue;
 
@@ -415,12 +415,12 @@ void summary_checker_nontermt::check_properties_linear(
       solver << conjunction(constants_computation);
       switch(solver())
       {
-      case decision_proceduret::D_UNSATISFIABLE: // should never happen
+      case decision_proceduret::resultt::D_UNSATISFIABLE: // should never happen
           solver.pop_context();
           solver.pop_context();
         return;
 
-      case decision_proceduret::D_SATISFIABLE:
+      case decision_proceduret::resultt::D_SATISFIABLE:
           for(auto constant : constants)
           {
             exprt ex=solver.solver->get(constant);
@@ -485,10 +485,10 @@ void summary_checker_nontermt::check_properties_linear(
         exprt::operandst local_constraints;
         switch(result=solver())
         {
-        case decision_proceduret::D_UNSATISFIABLE:
+        case decision_proceduret::resultt::D_UNSATISFIABLE:
           break;
 
-        case decision_proceduret::D_SATISFIABLE:
+        case decision_proceduret::resultt::D_SATISFIABLE:
             lbv_it=loopback_vars.begin();
             slvc_it=solver_consts.begin();
             while(slvc_it!=solver_consts.end())
@@ -530,7 +530,7 @@ void summary_checker_nontermt::check_properties_linear(
           return;
         }
       }
-      while(result!=decision_proceduret::D_UNSATISFIABLE);
+      while(result!=decision_proceduret::resultt::D_UNSATISFIABLE);
 
       solver.pop_context();
 
@@ -539,11 +539,11 @@ void summary_checker_nontermt::check_properties_linear(
 
       switch(solver())
       {
-      case decision_proceduret::D_UNSATISFIABLE:
+      case decision_proceduret::resultt::D_UNSATISFIABLE:
           solver.pop_context();
         break;
 
-      case decision_proceduret::D_SATISFIABLE:
+      case decision_proceduret::resultt::D_SATISFIABLE:
         // found nontermination
           property_map[property_id].result=FAIL;
           solver.pop_context();
